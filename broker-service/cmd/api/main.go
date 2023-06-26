@@ -17,7 +17,7 @@ func main() {
 
 	log.Printf("Starting broker service on port %s\n", webPort)
 
-	srv := &http.Server{
+	srv := http.Server{
 		Addr:    fmt.Sprintf(":%s", webPort),
 		Handler: app.routes(),
 	}
