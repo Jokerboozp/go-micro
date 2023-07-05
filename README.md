@@ -1,12 +1,16 @@
 # Go-Micro Udemy Lesson
 
-## 1、Building a simple front end and one Microservice
+## 1、Project Struct
 
-### 1.1、front-end
+![e923936c265ad2a3568e567774564b06.jpeg](https://i2.mjj.rip/2023/07/05/e923936c265ad2a3568e567774564b06.jpeg)
+
+## 2、Building a simple front end and one Microservice
+
+### 2.1、front-end
 
 - 略过，主要进行Go后端，前端直接下载课程模板
 
-### 1.2、broker-service
+### 2.2、broker-service
 
 - 创建broker-service文件夹
 - 在broker-service文件夹中执行`go mod init broker`,创建`gomod`
