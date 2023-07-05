@@ -8,6 +8,19 @@ import (
 	"time"
 )
 
+/**
+该代码定义了一个 Mail 结构体，表示邮件配置信息。
+结构体中包含了邮件服务器的相关字段。
+该代码还定义了一个 Message 结构体，表示邮件消息的字段。
+Mail 结构体包含了一个 SendSMTPMessage 方法，用于发送使用 SMTP 协议的邮件。
+方法根据 Message 的字段构建邮件消息，并通过 SMTP 客户端发送邮件。
+buildPlainTextMessage 方法根据模板构建纯文本格式的邮件消息。
+buildHTMLMessage 方法根据模板构建 HTML 格式的邮件消息。
+inlineCSS 方法将 CSS 样式嵌入 HTML 消息中。
+getEncryption 方法根据加密方式的字符串值获取对应的枚举值。
+通过这些方法，可以实现构建和发送邮件的功能。
+*/
+
 type Mail struct {
 	Domain      string
 	Host        string
@@ -30,30 +43,36 @@ type Message struct {
 }
 
 func (m *Mail) SendSMTPMessage(msg Message) error {
+	// 如果消息的发件人为空，则使用默认发件人地址
 	if msg.From == "" {
 		msg.From = m.FromAddress
 	}
 
+	// 如果消息的发件人名称为空，则使用默认发件人名称
 	if msg.FromName == "" {
 		msg.FromName = m.FromName
 	}
 
+	// 创建数据映射，用于渲染邮件模板
 	data := map[string]any{
 		"message": msg.Data,
 	}
 
 	msg.DataMap = data
 
+	// 构建 HTML 格式的邮件消息
 	formattedMessage, err := m.buildHTMLMessage(msg)
 	if err != nil {
 		return err
 	}
 
+	// 构建纯文本格式的邮件消息
 	plainMessage, err := m.buildPlainTextMessage(msg)
 	if err != nil {
 		return err
 	}
 
+	// 创建 SMTP 客户端
 	server := mail.NewSMTPClient()
 	server.Host = m.Host
 	server.Port = m.Port
@@ -69,17 +88,20 @@ func (m *Mail) SendSMTPMessage(msg Message) error {
 		return err
 	}
 
+	// 创建邮件对象
 	email := mail.NewMSG()
 	email.SetFrom(msg.From).AddTo(msg.To).SetSubject(msg.Subject)
 	email.SetBody(mail.TextPlain, plainMessage)
 	email.AddAlternative(mail.TextHTML, formattedMessage)
 
+	// 添加附件
 	if len(msg.Attachments) > 0 {
 		for _, x := range msg.Attachments {
 			email.AddAttachment(x)
 		}
 	}
 
+	// 发送邮件
 	err = email.Send(smtpClient)
 	if err != nil {
 		return err
@@ -88,6 +110,7 @@ func (m *Mail) SendSMTPMessage(msg Message) error {
 	return nil
 }
 
+// 构建纯文本格式的邮件消息
 func (m *Mail) buildPlainTextMessage(msg Message) (string, error) {
 	templateToRender := "/templates/mail.plain.gohtml"
 
@@ -106,6 +129,7 @@ func (m *Mail) buildPlainTextMessage(msg Message) (string, error) {
 	return plainMessage, nil
 }
 
+// 构建 HTML 格式的邮件消息
 func (m *Mail) buildHTMLMessage(msg Message) (string, error) {
 	templateToRender := "/templates/mail.html.gohtml"
 
@@ -120,6 +144,8 @@ func (m *Mail) buildHTMLMessage(msg Message) (string, error) {
 	}
 
 	formattedMessage := tpl.String()
+
+	// 将 CSS 样式嵌入邮件消息中
 	formattedMessage, err = m.inlineCSS(formattedMessage)
 	if err != nil {
 		return "", err
@@ -128,6 +154,7 @@ func (m *Mail) buildHTMLMessage(msg Message) (string, error) {
 	return formattedMessage, nil
 }
 
+// 将 CSS 样式嵌入 HTML 中
 func (m *Mail) inlineCSS(s string) (string, error) {
 	options := premailer.Options{
 		RemoveClasses:     false,
@@ -148,6 +175,7 @@ func (m *Mail) inlineCSS(s string) (string, error) {
 	return html, nil
 }
 
+// 获取加密方式对应的枚举值
 func (m *Mail) getEncryption(s string) mail.Encryption {
 	switch s {
 	case "tls":

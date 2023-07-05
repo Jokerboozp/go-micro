@@ -14,6 +14,15 @@ import (
 	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
+/**
+该代码是一个身份验证服务的主程序。主要包括以下功能：
+
+连接到 PostgreSQL 数据库。
+启动 HTTP 服务器并监听指定的端口。
+处理数据库连接的重试逻辑。
+总结：该程序启动一个身份验证服务，它通过连接到 PostgreSQL 数据库来提供身份验证功能。在连接数据库时，使用了重试逻辑，如果数据库尚未就绪，则会进行重试。一旦连接成功，程序将启动 HTTP 服务器，并使用指定的端口提供身份验证服务。
+*/
+
 const webPort = "80"
 
 var counts int64
@@ -26,13 +35,13 @@ type Config struct {
 func main() {
 	log.Println("Starting authentication service")
 
-	// connect to DB
+	// 连接到数据库
 	conn := connectToDB()
 	if conn == nil {
-		log.Panic("Can't connect to Postgres!")
+		log.Panic("无法连接到 Postgres 数据库！")
 	}
 
-	// set up config
+	// 设置配置
 	app := Config{
 		DB:     conn,
 		Models: data.New(conn),
@@ -49,6 +58,7 @@ func main() {
 	}
 }
 
+// 打开数据库连接
 func openDB(dsn string) (*sql.DB, error) {
 	db, err := sql.Open("pgx", dsn)
 	if err != nil {
@@ -63,16 +73,17 @@ func openDB(dsn string) (*sql.DB, error) {
 	return db, nil
 }
 
+// 连接到数据库
 func connectToDB() *sql.DB {
 	dsn := os.Getenv("DSN")
 
 	for {
 		connection, err := openDB(dsn)
 		if err != nil {
-			log.Println("Postgres not yet ready ...")
+			log.Println("Postgres 数据库尚未就绪...")
 			counts++
 		} else {
-			log.Println("Connected to Postgres!")
+			log.Println("已连接到 Postgres 数据库！")
 			return connection
 		}
 
@@ -81,7 +92,7 @@ func connectToDB() *sql.DB {
 			return nil
 		}
 
-		log.Println("Backing off for two seconds....")
+		log.Println("等待两秒钟...")
 		time.Sleep(2 * time.Second)
 		continue
 	}

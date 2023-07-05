@@ -7,15 +7,24 @@ import (
 	"net/http"
 )
 
+/**
+该代码提供了一些用于处理 JSON 数据的函数：
+
+readJson 函数用于从请求中读取 JSON 数据并解析到指定的数据结构中。
+writeJson 函数用于将数据转换为 JSON 格式，并写入到响应中。
+errorJson 函数用于返回一个包含错误信息的 JSON 响应。该函数会设置错误标志为 true，并将错误消息作为响应的消息字段。
+总结：该代码提供了一些通用的函数，用于处理 JSON 数据的读取、写入和错误响应。这些函数可以在处理 HTTP 请求时方便地进行 JSON 数据的解析和生成响应。
+*/
+
 type jsonResponse struct {
-	Error   bool   `json:"error"`
-	Message string `json:"message"`
-	Data    any    `json:"data,omitempty"`
+	Error   bool   `json:"error"`          // 错误标志
+	Message string `json:"message"`        // 错误消息
+	Data    any    `json:"data,omitempty"` // 数据
 }
 
-// reading json
+// 读取 JSON 数据
 func (app *Config) readJson(w http.ResponseWriter, r *http.Request, data any) error {
-	maxBytes := 1048576 //one megabyte
+	maxBytes := 1048576 // 1MB
 	r.Body = http.MaxBytesReader(w, r.Body, int64(maxBytes))
 
 	dec := json.NewDecoder(r.Body)
@@ -31,7 +40,7 @@ func (app *Config) readJson(w http.ResponseWriter, r *http.Request, data any) er
 	return nil
 }
 
-// write json
+// 写入 JSON 数据
 func (app *Config) writeJson(w http.ResponseWriter, status int, data any, headers ...http.Header) error {
 	// 将 data 转换为 JSON 格式
 	out, err := json.Marshal(data)
@@ -62,7 +71,7 @@ func (app *Config) writeJson(w http.ResponseWriter, status int, data any, header
 	return nil
 }
 
-// error json
+// 返回错误的 JSON 响应
 func (app *Config) errorJson(w http.ResponseWriter, err error, status ...int) error {
 	statusCode := http.StatusBadRequest
 	if len(status) > 0 {

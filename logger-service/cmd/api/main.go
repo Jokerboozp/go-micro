@@ -12,6 +12,23 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+/**
+该代码定义了一个 Config 结构体，用于存储应用程序的配置信息和数据模型。
+全局变量 client 用于保存 MongoDB 的客户端连接。
+main 函数是程序的入口函数。
+在 main 函数中，首先连接到 MongoDB 数据库。
+然后创建一个上下文以用于断开连接，并在函数结束时断开数据库连接。
+创建 Config 对象，并将 MongoDB 客户端传递给 data.New 方法来创建数据模型。
+启动 Web 服务器，监听指定的端口，并使用 app.routes() 方法作为处理程序。
+如果启动服务器时发生错误，则打印错误信息。
+connectToMongo 函数用于连接到 MongoDB 数据库。
+在该函数中，创建连接选项，并设置认证信息。
+然后使用连接选项连接到数据库。
+如果连接过程中发生错误，则打印错误信息并返回错误。
+如果连接成功，则打印连接成功的消息，并返回 MongoDB 客户端连接对象。
+在程序中，使用 MongoDB 客户端连接进行数据库操作和数据访问。
+*/
+
 const (
 	webPort  = "80"
 	rpcPort  = "5001"
@@ -49,7 +66,6 @@ func main() {
 	}
 
 	// start web server
-	// go app.serve()
 	fmt.Println("Starting service on port", webPort)
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", webPort),
@@ -60,30 +76,18 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-
 }
 
-// func (app *Config) serve() {
-// 	srv := &http.Server{
-// 		Addr: fmt.Sprintf(":%s", webPort),
-// 		Handler: app.routes(),
-// 	}
-
-// 	err := srv.ListenAndServe()
-// 	if err != nil {
-// 		log.Panic()
-// 	}
-// }
-
+// connectToMongo 方法用于连接到 MongoDB 数据库
 func connectToMongo() (*mongo.Client, error) {
-	// create connection options
+	// 创建连接选项
 	clientOptions := options.Client().ApplyURI(mongoURL)
 	clientOptions.SetAuth(options.Credential{
 		Username: "admin",
 		Password: "password",
 	})
 
-	// connect
+	// 连接到数据库
 	c, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		log.Println("Error connecting:", err)
