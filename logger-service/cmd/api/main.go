@@ -15,7 +15,7 @@ import (
 const (
 	webPort  = "80"
 	rpcPort  = "5001"
-	mongoURL = "mongodb://localhost:27017"
+	mongoURL = "mongodb://mongo:27017"
 	gRpcPort = "50001"
 )
 
@@ -50,7 +50,7 @@ func main() {
 
 	// start web server
 	// go app.serve()
-	log.Println("Starting service on port", webPort)
+	fmt.Println("Starting service on port", webPort)
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", webPort),
 		Handler: app.routes(),
@@ -58,7 +58,7 @@ func main() {
 
 	err = srv.ListenAndServe()
 	if err != nil {
-		log.Panic()
+		fmt.Println(err)
 	}
 
 }
