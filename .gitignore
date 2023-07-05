@@ -1,2 +1,7 @@
 /project/db-data/mongo/
 /project/db-data/postgres/
+!/broker-service/brokerApp
+!/front-end/frontApp
+!/mail-service/mailerApp
+!/project/db-data/rabbitmq/
+!/listener-service/listenerApp
