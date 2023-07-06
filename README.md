@@ -25,3 +25,8 @@ go get github.com/go-chi/cors
 - 在broker-service创建`broker-service.dockerfile`
 - 在project中创建`docker-compose.yml`
 - 在project文件夹路径下执行`docker-compose up -d`才能创建对应的docker容器并运行
+```shell
+go get google.golang.org/grpc
+go get google.golang.org/protobuf
+protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative logs.proto 
+```

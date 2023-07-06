@@ -1,12 +1,17 @@
 package main
 
 import (
-	"broker/event"  // 导入自定义的 event 包
-	"bytes"         // 导入 bytes 包用于操作字节
+	"broker/event" // 导入自定义的 event 包
+	"broker/logs"
+	"bytes" // 导入 bytes 包用于操作字节
+	"context"
 	"encoding/json" // 导入 json 包用于 JSON 编码和解码
 	"errors"        // 导入 errors 包用于错误处理
-	"net/http"      // 导入 net/http 包用于处理 HTTP 请求和响应
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+	"net/http" // 导入 net/http 包用于处理 HTTP 请求和响应
 	"net/rpc"
+	"time"
 )
 
 type RequestPayload struct { // 定义 RequestPayload 结构体，用于请求的载荷
@@ -242,6 +247,43 @@ func (app *Config) logItemViaRPC(w http.ResponseWriter, l LogPayload) {
 		Error:   false,
 		Message: result,
 	}
+
+	app.writeJson(w, http.StatusAccepted, payload)
+}
+
+func (app *Config) LogViaGRPC(w http.ResponseWriter, r *http.Request) {
+	var requestPayload RequestPayload
+
+	err := app.readJson(w, r, &requestPayload)
+	if err != nil {
+		app.errorJson(w, err)
+		return
+	}
+
+	conn, err := grpc.Dial("logger-service:50001", grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
+	if err != nil {
+		app.errorJson(w, err)
+		return
+	}
+	defer conn.Close()
+
+	c := logs.NewLogServiceClient(conn)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	_, err = c.WriteLog(ctx, &logs.LogRequest{
+		LogEntry: &logs.Log{
+			Name: requestPayload.Log.Name,
+			Data: requestPayload.Log.Data,
+		}})
+	if err != nil {
+		app.errorJson(w, err)
+		return
+	}
+
+	var payload jsonResponse
+	payload.Error = false
+	payload.Message = "logged"
 
 	app.writeJson(w, http.StatusAccepted, payload)
 }
