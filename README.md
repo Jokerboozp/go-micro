@@ -38,4 +38,8 @@ docker push jokerboozp/logger-service:1.0.0
 docker swarm init
 docker stack deploy -c swarm.yml myapp
 docker service ls
+docker service scale myapp_logger-service=2
+docker service update --image jokerboozp/logger-service:1.0.1 myapp_logger-service
+docker stack rm myapp
+docker swarm leave --force
 ```
