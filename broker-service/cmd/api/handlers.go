@@ -6,6 +6,7 @@ import (
 	"encoding/json" // 导入 json 包用于 JSON 编码和解码
 	"errors"        // 导入 errors 包用于错误处理
 	"net/http"      // 导入 net/http 包用于处理 HTTP 请求和响应
+	"net/rpc"
 )
 
 type RequestPayload struct { // 定义 RequestPayload 结构体，用于请求的载荷
@@ -55,7 +56,7 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 	case "auth":
 		app.authenticate(w, requestPayload.Auth) // 调用 authenticate 方法进行认证
 	case "log":
-		app.logEventViaRabbit(w, requestPayload.Log) // 调用 logEventViaRabbit 方法发送日志事件
+		app.logItemViaRPC(w, requestPayload.Log) // 调用 logItemViaRPC 方法发送日志事件
 	case "mail":
 		app.sendMail(w, requestPayload.Mail) // 调用 sendMail 方法发送邮件
 	default:
@@ -211,4 +212,36 @@ func (app *Config) pushToQueue(name, msg string) error {
 		return err
 	}
 	return nil
+}
+
+type RPCPayload struct {
+	Name string
+	Data string
+}
+
+func (app *Config) logItemViaRPC(w http.ResponseWriter, l LogPayload) {
+	client, err := rpc.Dial("tcp", "logger-service:5001")
+	if err != nil {
+		app.errorJson(w, err)
+		return
+	}
+
+	rpcPayload := RPCPayload{
+		Name: l.Name,
+		Data: l.Data,
+	}
+
+	var result string
+	err = client.Call("RPCServer.LogInfo", rpcPayload, &result)
+	if err != nil {
+		app.errorJson(w, err)
+		return
+	}
+
+	payload := jsonResponse{
+		Error:   false,
+		Message: result,
+	}
+
+	app.writeJson(w, http.StatusAccepted, payload)
 }
