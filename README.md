@@ -30,3 +30,12 @@ go get google.golang.org/grpc
 go get google.golang.org/protobuf
 protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative logs.proto 
 ```
+
+- docker
+```shell
+docker build -f logger-service.dockerfile -t jokerboozp/logger-service:1.0.0 .
+docker push jokerboozp/logger-service:1.0.0
+docker swarm init
+docker stack deploy -c swarm.yml myapp
+docker service ls
+```
