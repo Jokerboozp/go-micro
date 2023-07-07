@@ -57,8 +57,6 @@
 
             const headers = new Headers()
             headers.append("Content-Type","application/json")
-            headers.append('Access-Control-Allow-Origin', '*');
-            headers.append('Access-Control-Allow-Credentials', 'true');
 
             const body = {
                 method: "POST",
@@ -95,8 +93,6 @@
 
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
-            headers.append('Access-Control-Allow-Origin', '*');
-            headers.append('Access-Control-Allow-Credentials', 'true');
 
             const body = {
                 method: 'POST',
@@ -135,8 +131,6 @@
 
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
-            headers.append('Access-Control-Allow-Origin', '*');
-            headers.append('Access-Control-Allow-Credentials', 'true');
 
             const body = {
                 method: 'POST',
@@ -173,8 +167,6 @@
 
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
-            headers.append('Access-Control-Allow-Origin', '*');
-            headers.append('Access-Control-Allow-Credentials', 'true');
 
             const body = {
                 method: 'POST',
@@ -206,8 +198,6 @@
             }
 
             const headers = new Headers();
-            headers.append('Access-Control-Allow-Origin', '*');
-            headers.append('Access-Control-Allow-Credentials', 'true');
 
             fetch(brokerURL, body)
                 .then((response) => response.json())
