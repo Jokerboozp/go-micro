@@ -44,6 +44,7 @@
         let output = document.getElementById("output");
         let sent = document.getElementById("payload");
         let received = document.getElementById("received");
+        let brokerURL = {{.BrokerURL}};
 
         logBtn.addEventListener("click",function (){
             const payload = {
@@ -56,6 +57,8 @@
 
             const headers = new Headers()
             headers.append("Content-Type","application/json")
+            headers.append('Access-Control-Allow-Origin', '*');
+            headers.append('Access-Control-Allow-Credentials', 'true');
 
             const body = {
                 method: "POST",
@@ -63,7 +66,7 @@
                 headers: headers,
             }
 
-            fetch("http:\/\/localhost:8080/handle", body)
+            fetch(brokerURL + "/handle", body)
                 .then((response) => response.json())
                 .then((data) => {
                     console.log("Data:",data)
@@ -92,6 +95,8 @@
 
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
+            headers.append('Access-Control-Allow-Origin', '*');
+            headers.append('Access-Control-Allow-Credentials', 'true');
 
             const body = {
                 method: 'POST',
@@ -99,7 +104,7 @@
                 headers: headers,
             }
 
-            fetch("http:\/\/localhost:8080/handle", body)
+            fetch(brokerURL + "/handle", body)
                 .then((response) => response.json())
                 .then((data) => {
                     console.log("Data:",data)
@@ -130,6 +135,8 @@
 
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
+            headers.append('Access-Control-Allow-Origin', '*');
+            headers.append('Access-Control-Allow-Credentials', 'true');
 
             const body = {
                 method: 'POST',
@@ -137,7 +144,7 @@
                 headers: headers,
             }
 
-            fetch("http:\/\/localhost:8080/handle", body)
+            fetch(brokerURL + "/handle", body)
                 .then((response) => response.json())
                 .then((data) => {
                     console.log("Data:",data)
@@ -166,6 +173,8 @@
 
             const headers = new Headers();
             headers.append("Content-Type", "application/json");
+            headers.append('Access-Control-Allow-Origin', '*');
+            headers.append('Access-Control-Allow-Credentials', 'true');
 
             const body = {
                 method: 'POST',
@@ -173,7 +182,7 @@
                 headers: headers,
             }
 
-            fetch("http:\/\/localhost:8080/log-grpc", body)
+            fetch(brokerURL + "/log-grpc", body)
                 .then((response) => response.json())
                 .then((data) => {
                     console.log("Data:",data)
@@ -196,7 +205,11 @@
                 method: 'POST',
             }
 
-            fetch("http:\/\/localhost:8080", body)
+            const headers = new Headers();
+            headers.append('Access-Control-Allow-Origin', '*');
+            headers.append('Access-Control-Allow-Credentials', 'true');
+
+            fetch(brokerURL, body)
                 .then((response) => response.json())
                 .then((data) => {
                     sent.innerHTML ="empty post request";

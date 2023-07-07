@@ -62,6 +62,10 @@ func (app *Config) writeJson(w http.ResponseWriter, status int, data any, header
 
 	// 设置 ResponseWriter 的 Content-Type 为 application/json
 	w.Header().Set("Content-Type", "application/json")
+	//Allow CORS here By * or specific origin
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 	// 设置 ResponseWriter 的状态码为指定的 status
 	w.WriteHeader(status)

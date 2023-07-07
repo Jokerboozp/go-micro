@@ -42,4 +42,7 @@ docker service scale myapp_logger-service=2
 docker service update --image jokerboozp/logger-service:1.0.1 myapp_logger-service
 docker stack rm myapp
 docker swarm leave --force
+make build_front_linux
+docker build -f front-end.dockerfile -t jokerboozp/front-end:1.0.0 .
+docker push jokerboozp/front-end:1.0.0
 ```
